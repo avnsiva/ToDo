@@ -2,22 +2,13 @@
 <html>
 
 <head>
-    <title>Bar Chart</title>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-
-  
+    <title>To Do</title>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script> 
 </head>
 
 <body>
-    
-    
     <button onclick="myFunction()" class="dropbtn">Dropdown</button>
-  <div id="myDropdown" class="dropdown-content">
-    <a href="#">Home Expenses</a>
-    <a href="#">Diapers</a>
-    <a href="#">Telephone Bills</a>
-  </div>
-<select name="cars">
+<select id="Category" name="Category">
   <option value="Home Expenses">Home Expenses</option>
   <option value="Diapers">Diapers</option>
   <option value="Telephone Bills">Telephone Bills</option>
@@ -26,34 +17,39 @@
   <option value="Fuel">Fuel</option>
   <option value="Automobile">Automobile</option>
   </select>
+  <select id="PMode" name="PMode">
+  <option value="Credit Card">Credit Card</option>
+  <option value="Cash">Cash</option>
+  </select>
   <input type="number" id="expensevalue"/>
+  <input type="number" id="dateis"/>
   <button id="Save">Save</button>
     
     <script>
-     $('#Save').click(function() {
-         localStorage.removeItem("Expenses");
-         var record = { "exp": document.getElementById("expensevalue").value};
-         var existingdata = localStorage.getItem("Expenses");
-         alert ("Existing data is" + existingdata);
-         var oldvalue = null;
-         if (existingdata != null){
-             oldvalue = JSON.parse(existingdata);
-             alert("Old Value is" + oldvalue);
-         }
-         if (oldvalue != null) {
-             oldvalue.expenserecord.push(JSON.parse(record));
-             alert("oldvalue now is " + JSON.stringify(oldvalue));
-             localStorage.setItem("Expenses", JSON.stringify(oldvalue.expenserecord.push(record)));
-             alert("localstorage value now is " + localStorage.getItem("Expenses"));
-         } else {
-             alert("in else of oldvalue is null");
-             var newRecord = {"expenserecord" : [ record ]};
-             localStorage.setItem("Expenses", JSON.stringify(newRecord))
-         }
-         alert("The expense value is " +JSON.stringify(newRecord));
-         alert("The data in localStorage is" + localStorage.getItem("Expenses"));
-     })
-         </script>
+            $('#Save').click(function() {
+                localStorage.clear;
+                var baseJson =  {"expenserecord" : [ {"dummydata" : "0"} ]};
+                //alert("base is " + base);
+                //var baseJson = JSON.parse(base);
+                alert("basejson is " + baseJson);
+                localStorage.setItem("Expenses1" , JSON.stringify(baseJson));
+                alert("localstorage is " + localStorage.getItem("Expenses1"));
+                var pMode = document.getElementById("PMode");
+                var Catetory = document.getElementById("Category");
+                var recooJson = {"Amount" : document.getElementById("expensevalue").value,"Date" : document.getElementById("dateis").value, "PMode" : pMode.options[pMode.selectedIndex].value, "Category" :  Catetory.options[Catetory.selectedIndex].value};
+                //alert("recoo is " + recoo);
+                //var recooJson = JSON.parse(recoo);
+                alert("Recoo JSON is" + recooJson);
+                var tranRecord = JSON.parse(localStorage.getItem("Expenses1"));
+                alert("tranrecord is" + tranRecord);
+                alert("tranrecord in string is" + JSON.stringify(tranRecord));
+                tranRecord.expenserecord.push(recooJson);
+                alert("tranrecord after pushing a new record is" + JSON.stringify(tranRecord));
+                localStorage.removeItem("Expenses1");
+                localStorage.setItem("Expenses1", JSON.stringify(tranRecord));
+                alert("localstorage is " + localStorage.getItem("Expenses1"));
+            })
+                </script>                                       
 </body>
 
 </html>
