@@ -1,0 +1,7 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "SampleAPI",
+        "description": "A sample API Management"
+    }
+}
