@@ -1,0 +1,608 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "import plotly.graph_objs as go\n",
+    "import dateutil.relativedelta as relativedelta\n",
+    "import dateutil.rrule as rrule\n",
+    "import datetime\n",
+    "import nsepy as npy\n",
+    "import numpy as np\n",
+    "import dateutil.relativedelta\n",
+    "from datetime import date\n",
+    "import math\n",
+    "import datetime as dt\n",
+    "from __future__ import division"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "          Date      Open      High       Low     Close     Volume     Turnover\n",
+      "0   2017-01-02  18242.30  18249.00  17844.90  17969.60   74444730  18572400000\n",
+      "1   2017-01-03  18002.75  18115.05  17830.95  18035.60   64513818  17693000000\n",
+      "2   2017-01-04  18037.45  18092.85  17868.90  17891.00   50508161  16158500000\n",
+      "3   2017-01-05  18000.75  18164.05  17977.80  18115.95   68874940  22711800000\n",
+      "4   2017-01-06  18168.45  18325.50  18157.30  18264.00   65919927  21745900000\n",
+      "5   2017-01-09  18314.25  18373.10  18256.15  18286.65   42677260  14043800000\n",
+      "6   2017-01-10  18351.45  18441.15  18275.75  18409.60   59993426  20121800000\n",
+      "7   2017-01-11  18535.35  18889.45  18515.25  18830.00  102842482  34934700000\n",
+      "8   2017-01-12  18885.45  18966.30  18805.85  18873.95   66286062  19825400000\n",
+      "9   2017-01-13  18949.70  18952.25  18781.25  18912.10   55762182  18553000000\n",
+      "10  2017-01-16  18899.70  19134.50  18865.25  19096.45   59319825  17407700000\n",
+      "11  2017-01-17  19128.15  19202.25  18981.85  19067.05   63686033  18626200000\n",
+      "12  2017-01-18  19074.85  19276.50  19072.10  19164.50   56898977  18713800000\n",
+      "13  2017-01-19  19165.35  19185.30  19046.10  19124.25   83679399  24097800000\n",
+      "14  2017-01-20  18996.60  19071.65  18793.05  18820.80  110140976  38559000000\n",
+      "15  2017-01-23  18762.00  18909.65  18722.85  18842.70   97144867  32324500000\n",
+      "16  2017-01-24  18931.00  19054.30  18906.95  19023.50   81717037  31186200000\n",
+      "17  2017-01-25  19120.05  19518.45  19114.15  19473.20  131028002  46726700000\n",
+      "18  2017-01-27  19588.40  19794.95  19534.90  19708.30  157251635  46547900000\n",
+      "19  2017-01-30  19718.80  19767.05  19561.10  19585.25   71178678  21133700000\n",
+      "20  2017-01-31  19533.20  19624.10  19435.45  19515.15   67343878  23316600000\n",
+      "21  2017-02-01  19522.40  20047.85  19470.95  20020.60  145906975  45498500000\n",
+      "22  2017-02-02  20053.95  20146.90  19915.20  20070.30  116963782  32796400000\n",
+      "23  2017-02-03  20061.90  20229.65  20009.95  20196.80  113714035  30926600000\n",
+      "24  2017-02-06  20307.15  20462.45  20298.05  20371.60   99281709  28538500000\n",
+      "25  2017-02-07  20367.30  20426.95  20281.50  20327.25  109432014  28356000000\n",
+      "26  2017-02-08  20335.25  20362.80  20070.15  20245.40   85902788  26261700000\n",
+      "27  2017-02-09  20312.65  20406.60  20000.35  20151.15  107559620  27632500000\n",
+      "28  2017-02-10  20225.75  20310.00  20167.10  20213.90  117595817  33540800000\n",
+      "29  2017-02-13  20273.65  20308.70  20116.90  20251.80  108967330  31710100000\n",
+      "..         ...       ...       ...       ...       ...        ...          ...\n",
+      "165 2017-09-01  24389.20  24494.35  24319.20  24434.00   66906837  18275800000\n",
+      "166 2017-09-04  24456.30  24459.35  24156.40  24236.85   52531466  15546900000\n",
+      "167 2017-09-05  24272.60  24388.05  24256.30  24328.30   47757761  15827000000\n",
+      "168 2017-09-06  24192.40  24331.30  24151.10  24279.15   59006554  19962500000\n",
+      "169 2017-09-07  24324.85  24413.10  24246.90  24304.90   69696218  24190100000\n",
+      "170 2017-09-08  24409.50  24419.25  24273.00  24370.80   47085077  17857200000\n",
+      "171 2017-09-11  24468.50  24735.35  24458.25  24672.25   60804947  29730800000\n",
+      "172 2017-09-12  24779.15  24821.35  24653.60  24784.70   66927717  23875800000\n",
+      "173 2017-09-13  24818.35  24948.80  24737.80  24831.80   68334647  20539500000\n",
+      "174 2017-09-14  24857.25  24994.30  24815.50  24912.25   77726236  27469500000\n",
+      "175 2017-09-15  24840.30  24916.85  24791.55  24844.30  114568146  37544900000\n",
+      "176 2017-09-18  24948.15  25105.35  24941.75  25046.90   65913355  23198400000\n",
+      "177 2017-09-19  25059.75  25103.45  24993.00  25041.55   60118203  18632000000\n",
+      "178 2017-09-20  24984.65  25052.60  24938.30  24965.05   87376241  26101700000\n",
+      "179 2017-09-21  24934.10  24992.50  24706.45  24799.25   72279851  21458000000\n",
+      "180 2017-09-22  24704.55  24709.70  24340.00  24368.85   91287072  28752300000\n",
+      "181 2017-09-25  24361.55  24363.80  24015.45  24165.05   92662078  30780600000\n",
+      "182 2017-09-26  24105.60  24236.95  24017.40  24199.15   66244294  22208500000\n",
+      "183 2017-09-27  24308.70  24331.85  23766.60  23812.95   80405424  25481200000\n",
+      "184 2017-09-28  23804.05  24074.20  23611.10  24008.15  136679326  51302700000\n",
+      "185 2017-09-29  24114.00  24227.45  24004.80  24053.00   71703679  24726600000\n",
+      "186 2017-10-03  24200.60  24226.80  24007.25  24103.40   66828025  22616400000\n",
+      "187 2017-10-04  24124.15  24230.45  24058.65  24113.30   61740801  20153500000\n",
+      "188 2017-10-05  24114.75  24188.30  24033.35  24058.05   67125178  21467000000\n",
+      "189 2017-10-06  24083.55  24242.05  24074.35  24190.00   84205169  25061100000\n",
+      "190 2017-10-09  24209.55  24311.10  24156.05  24251.90   66557307  19018400000\n",
+      "191 2017-10-10  24304.80  24379.75  24273.65  24347.45   62757458  19373000000\n",
+      "192 2017-10-11  24411.45  24460.25  24054.25  24107.45   75494487  22416700000\n",
+      "193 2017-10-12  24151.45  24393.40  23978.40  24361.25   73274598  23490000000\n",
+      "194 2017-10-13  24411.10  24779.75  24387.80  24689.15   89300075  26619900000\n",
+      "\n",
+      "[195 rows x 7 columns]\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "D:\\app\\Anaconda2\\lib\\site-packages\\ipykernel\\__main__.py:8: SettingWithCopyWarning:\n",
+      "\n",
+      "\n",
+      "A value is trying to be set on a copy of a slice from a DataFrame\n",
+      "\n",
+      "See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy\n",
+      "\n",
+      "D:\\app\\Anaconda2\\lib\\site-packages\\ipykernel\\__main__.py:9: SettingWithCopyWarning:\n",
+      "\n",
+      "\n",
+      "A value is trying to be set on a copy of a slice from a DataFrame\n",
+      "\n",
+      "See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "tempIndex = updateIndex()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[datetime.datetime(2017, 10, 12, 0, 0)]\n",
+      "[23500, 23600, 23700, 23800, 23900, 24000, 24100, 24200, 24300, 24400, 24500, 24600, 24700]\n",
+      "2017-10-12 00:00:00\n",
+      "2017-09-27 00:00:00\n",
+      "23500\n",
+      "23600\n",
+      "23700\n",
+      "23800\n",
+      "23900\n",
+      "24000\n",
+      "24100\n",
+      "24200\n",
+      "24300\n",
+      "24400\n",
+      "24500\n",
+      "24600\n",
+      "24700\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "D:\\app\\Anaconda2\\lib\\site-packages\\ipykernel\\__main__.py:7: SettingWithCopyWarning:\n",
+      "\n",
+      "\n",
+      "A value is trying to be set on a copy of a slice from a DataFrame\n",
+      "\n",
+      "See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy\n",
+      "\n"
+     ]
+    },
+    {
+     "ename": "IOError",
+     "evalue": "File C:\\Users\\sivar\\Dropbox\\Python Notebooks\\BankNIFTY_2017_Part1.csv does not exist",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[1;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[1;31mIOError\u001b[0m                                   Traceback (most recent call last)",
+      "\u001b[1;32m<ipython-input-23-067943fc0955>\u001b[0m in \u001b[0;36m<module>\u001b[1;34m()\u001b[0m\n\u001b[1;32m----> 1\u001b[1;33m \u001b[0mupdateOptions\u001b[0m\u001b[1;33m(\u001b[0m\u001b[0mtempIndex\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[1;32m<ipython-input-6-c76264131b34>\u001b[0m in \u001b[0;36mupdateOptions\u001b[1;34m(df)\u001b[0m\n\u001b[0;32m      3\u001b[0m     \u001b[0moptiondf\u001b[0m \u001b[1;33m=\u001b[0m \u001b[0mmergeDF\u001b[0m\u001b[1;33m(\u001b[0m\u001b[0moptiondf\u001b[0m\u001b[1;33m,\u001b[0m \u001b[0mdf\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m      4\u001b[0m     \u001b[0moptiondf\u001b[0m \u001b[1;33m=\u001b[0m \u001b[0mcomputeGreeks\u001b[0m\u001b[1;33m(\u001b[0m\u001b[0moptiondf\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[1;32m----> 5\u001b[1;33m     \u001b[0mappendResults\u001b[0m\u001b[1;33m(\u001b[0m\u001b[0moptiondf\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[1;32m<ipython-input-19-74caf3c33ab6>\u001b[0m in \u001b[0;36mappendResults\u001b[1;34m(df)\u001b[0m\n\u001b[0;32m      1\u001b[0m \u001b[1;32mdef\u001b[0m \u001b[0mappendResults\u001b[0m\u001b[1;33m(\u001b[0m\u001b[0mdf\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m:\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[1;32m----> 2\u001b[1;33m     \u001b[0mexistingdf\u001b[0m \u001b[1;33m=\u001b[0m \u001b[0mpd\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0mread_csv\u001b[0m\u001b[1;33m(\u001b[0m\u001b[1;34m\"C:\\Users\\sivar\\Dropbox\\Python Notebooks\\BankNIFTY_2017_Part1.csv\"\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m\u001b[0;32m      3\u001b[0m     \u001b[0mupdateddf\u001b[0m \u001b[1;33m=\u001b[0m \u001b[0mpd\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0mconcat\u001b[0m\u001b[1;33m(\u001b[0m\u001b[1;33m[\u001b[0m\u001b[0mexistingdf\u001b[0m\u001b[1;33m,\u001b[0m\u001b[0mdf\u001b[0m\u001b[1;33m]\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m      4\u001b[0m     \u001b[0mupdateddf\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0mto_csv\u001b[0m\u001b[1;33m(\u001b[0m\u001b[1;34m\"C:\\Users\\sivar\\Dropbox\\Python Notebooks\\BankNIFTY_2017_Part22.csv\"\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n",
+      "\u001b[1;32mD:\\app\\Anaconda2\\lib\\site-packages\\pandas\\io\\parsers.pyc\u001b[0m in \u001b[0;36mparser_f\u001b[1;34m(filepath_or_buffer, sep, dialect, compression, doublequote, escapechar, quotechar, quoting, skipinitialspace, lineterminator, header, index_col, names, prefix, skiprows, skipfooter, skip_footer, na_values, true_values, false_values, delimiter, converters, dtype, usecols, engine, delim_whitespace, as_recarray, na_filter, compact_ints, use_unsigned, low_memory, buffer_lines, warn_bad_lines, error_bad_lines, keep_default_na, thousands, comment, decimal, parse_dates, keep_date_col, dayfirst, date_parser, memory_map, float_precision, nrows, iterator, chunksize, verbose, encoding, squeeze, mangle_dupe_cols, tupleize_cols, infer_datetime_format, skip_blank_lines)\u001b[0m\n\u001b[0;32m    496\u001b[0m                     skip_blank_lines=skip_blank_lines)\n\u001b[0;32m    497\u001b[0m \u001b[1;33m\u001b[0m\u001b[0m\n\u001b[1;32m--> 498\u001b[1;33m         \u001b[1;32mreturn\u001b[0m \u001b[0m_read\u001b[0m\u001b[1;33m(\u001b[0m\u001b[0mfilepath_or_buffer\u001b[0m\u001b[1;33m,\u001b[0m \u001b[0mkwds\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m\u001b[0;32m    499\u001b[0m \u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m    500\u001b[0m     \u001b[0mparser_f\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0m__name__\u001b[0m \u001b[1;33m=\u001b[0m \u001b[0mname\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n",
+      "\u001b[1;32mD:\\app\\Anaconda2\\lib\\site-packages\\pandas\\io\\parsers.pyc\u001b[0m in \u001b[0;36m_read\u001b[1;34m(filepath_or_buffer, kwds)\u001b[0m\n\u001b[0;32m    273\u001b[0m \u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m    274\u001b[0m     \u001b[1;31m# Create the parser.\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[1;32m--> 275\u001b[1;33m     \u001b[0mparser\u001b[0m \u001b[1;33m=\u001b[0m \u001b[0mTextFileReader\u001b[0m\u001b[1;33m(\u001b[0m\u001b[0mfilepath_or_buffer\u001b[0m\u001b[1;33m,\u001b[0m \u001b[1;33m**\u001b[0m\u001b[0mkwds\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m\u001b[0;32m    276\u001b[0m \u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m    277\u001b[0m     \u001b[1;32mif\u001b[0m \u001b[1;33m(\u001b[0m\u001b[0mnrows\u001b[0m \u001b[1;32mis\u001b[0m \u001b[1;32mnot\u001b[0m \u001b[0mNone\u001b[0m\u001b[1;33m)\u001b[0m \u001b[1;32mand\u001b[0m \u001b[1;33m(\u001b[0m\u001b[0mchunksize\u001b[0m \u001b[1;32mis\u001b[0m \u001b[1;32mnot\u001b[0m \u001b[0mNone\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m:\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n",
+      "\u001b[1;32mD:\\app\\Anaconda2\\lib\\site-packages\\pandas\\io\\parsers.pyc\u001b[0m in \u001b[0;36m__init__\u001b[1;34m(self, f, engine, **kwds)\u001b[0m\n\u001b[0;32m    588\u001b[0m             \u001b[0mself\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0moptions\u001b[0m\u001b[1;33m[\u001b[0m\u001b[1;34m'has_index_names'\u001b[0m\u001b[1;33m]\u001b[0m \u001b[1;33m=\u001b[0m \u001b[0mkwds\u001b[0m\u001b[1;33m[\u001b[0m\u001b[1;34m'has_index_names'\u001b[0m\u001b[1;33m]\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m    589\u001b[0m \u001b[1;33m\u001b[0m\u001b[0m\n\u001b[1;32m--> 590\u001b[1;33m         \u001b[0mself\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0m_make_engine\u001b[0m\u001b[1;33m(\u001b[0m\u001b[0mself\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0mengine\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m\u001b[0;32m    591\u001b[0m \u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m    592\u001b[0m     \u001b[1;32mdef\u001b[0m \u001b[0m_get_options_with_defaults\u001b[0m\u001b[1;33m(\u001b[0m\u001b[0mself\u001b[0m\u001b[1;33m,\u001b[0m \u001b[0mengine\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m:\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n",
+      "\u001b[1;32mD:\\app\\Anaconda2\\lib\\site-packages\\pandas\\io\\parsers.pyc\u001b[0m in \u001b[0;36m_make_engine\u001b[1;34m(self, engine)\u001b[0m\n\u001b[0;32m    729\u001b[0m     \u001b[1;32mdef\u001b[0m \u001b[0m_make_engine\u001b[0m\u001b[1;33m(\u001b[0m\u001b[0mself\u001b[0m\u001b[1;33m,\u001b[0m \u001b[0mengine\u001b[0m\u001b[1;33m=\u001b[0m\u001b[1;34m'c'\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m:\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m    730\u001b[0m         \u001b[1;32mif\u001b[0m \u001b[0mengine\u001b[0m \u001b[1;33m==\u001b[0m \u001b[1;34m'c'\u001b[0m\u001b[1;33m:\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[1;32m--> 731\u001b[1;33m             \u001b[0mself\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0m_engine\u001b[0m \u001b[1;33m=\u001b[0m \u001b[0mCParserWrapper\u001b[0m\u001b[1;33m(\u001b[0m\u001b[0mself\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0mf\u001b[0m\u001b[1;33m,\u001b[0m \u001b[1;33m**\u001b[0m\u001b[0mself\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0moptions\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m\u001b[0;32m    732\u001b[0m         \u001b[1;32melse\u001b[0m\u001b[1;33m:\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m    733\u001b[0m             \u001b[1;32mif\u001b[0m \u001b[0mengine\u001b[0m \u001b[1;33m==\u001b[0m \u001b[1;34m'python'\u001b[0m\u001b[1;33m:\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n",
+      "\u001b[1;32mD:\\app\\Anaconda2\\lib\\site-packages\\pandas\\io\\parsers.pyc\u001b[0m in \u001b[0;36m__init__\u001b[1;34m(self, src, **kwds)\u001b[0m\n\u001b[0;32m   1101\u001b[0m         \u001b[0mkwds\u001b[0m\u001b[1;33m[\u001b[0m\u001b[1;34m'allow_leading_cols'\u001b[0m\u001b[1;33m]\u001b[0m \u001b[1;33m=\u001b[0m \u001b[0mself\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0mindex_col\u001b[0m \u001b[1;32mis\u001b[0m \u001b[1;32mnot\u001b[0m \u001b[0mFalse\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m   1102\u001b[0m \u001b[1;33m\u001b[0m\u001b[0m\n\u001b[1;32m-> 1103\u001b[1;33m         \u001b[0mself\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0m_reader\u001b[0m \u001b[1;33m=\u001b[0m \u001b[0m_parser\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0mTextReader\u001b[0m\u001b[1;33m(\u001b[0m\u001b[0msrc\u001b[0m\u001b[1;33m,\u001b[0m \u001b[1;33m**\u001b[0m\u001b[0mkwds\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m\u001b[0;32m   1104\u001b[0m \u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m   1105\u001b[0m         \u001b[1;31m# XXX\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n",
+      "\u001b[1;32mpandas\\parser.pyx\u001b[0m in \u001b[0;36mpandas.parser.TextReader.__cinit__ (pandas\\parser.c:3246)\u001b[1;34m()\u001b[0m\n",
+      "\u001b[1;32mpandas\\parser.pyx\u001b[0m in \u001b[0;36mpandas.parser.TextReader._setup_parser_source (pandas\\parser.c:6111)\u001b[1;34m()\u001b[0m\n",
+      "\u001b[1;31mIOError\u001b[0m: File C:\\Users\\sivar\\Dropbox\\Python Notebooks\\BankNIFTY_2017_Part1.csv does not exist"
+     ]
+    }
+   ],
+   "source": [
+    "updateOptions(tempIndex)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def updateIndex():\n",
+    "    tempIndex = getDeltaData()\n",
+    "    tempIndex = AnnualVolatoility(tempIndex)\n",
+    "    return tempIndex"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "def getDeltaData():\n",
+    "    nifty_ind = npy.get_history(symbol=\"BANKNIFTY\",start=datetime.date(2017,1,1),end=pd.to_datetime('today').date(),index=True)\n",
+    "    nifty_ind.to_csv(\"C:\\Users\\sivar\\Dropbox\\Python Notebooks\\\\tt.csv\")\n",
+    "    ind_banknifty = pd.read_csv(\"C:\\Users\\sivar\\Dropbox\\Python Notebooks\\\\tt.csv\")\n",
+    "    ind_banknifty['Date'] = pd.to_datetime(ind_banknifty['Date'])\n",
+    "    print ind_banknifty\n",
+    "    return ind_banknifty"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def AnnualVolatoility(df):\n",
+    "    df['AnnualVolatility365']=0.0000000\n",
+    "    df['AnnualVolatility254']=0.0000000\n",
+    "    df['logreturns'] = np.log(df['Close'] / df['Close'].shift(1))\n",
+    "    i = 10\n",
+    "    for eachrows in df['logreturns'][10:]:\n",
+    "        subret = df['logreturns'][(i-10):i]\n",
+    "        df['AnnualVolatility365'][i] = (np.sqrt(365*subret.var())*100)\n",
+    "        df['AnnualVolatility254'][i] = (np.sqrt(254*subret.var())*100)\n",
+    "        i = i+1\n",
+    "    store_csv(df, \"volatility2.csv\")\n",
+    "    return df"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def AnnualVolatility(df):\n",
+    "    df['logreturns'] = np.log(df['Close'] / df['Close'].shift(1))\n",
+    "    df['AnnualVolatility']=0\n",
+    "    i = 10\n",
+    "    for eachrows in df['logreturns'][10:]:\n",
+    "        subret = df['Close'][(i-10):i]\n",
+    "        df['AnnualVolatility'][i] = np.std(subret, axis=0)\n",
+    "        i = i+1\n",
+    "    store_csv(df, \"volatility.csv\")\n",
+    "    return df"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def updateOptions(df):\n",
+    "    optiondf = getOptDeltaData()\n",
+    "    optiondf = mergeDF(optiondf, df)\n",
+    "    optiondf = computeGreeks(optiondf)\n",
+    "    appendResults(optiondf)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def getOptDeltaData():\n",
+    "    #existingdf = pd.read_csv(\"C:\\Users\\sivar\\Dropbox\\Python Notebooks\\BankNIFTY_2017_Part1.csv\")\n",
+    "    #existingdf['Date'] = pd.to_datetime(existingdf['Date'])\n",
+    "    #startDate = existingdf['Date'].max()\n",
+    "    #endDate = pd.to_datetime('today')\n",
+    "    expDates = getExpDates()\n",
+    "    strikes = getStrikes()\n",
+    "    opt2df = optPrices(expDates, strikes)\n",
+    "    return opt2df\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def getExpDates():\n",
+    "    year=2017\n",
+    "    before=datetime.datetime(year,10,6)\n",
+    "    after=datetime.datetime(year,10,13)\n",
+    "    rr = rrule.rrule(rrule.WEEKLY,byweekday=relativedelta.TH,dtstart=before)\n",
+    "    expdates = (rr.between(before,after,inc=True))\n",
+    "    print expdates\n",
+    "    return expdates"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def getStrikes():\n",
+    "    startStrike=23500\n",
+    "    endStrike=24800\n",
+    "    strikes = np.arange(startStrike, endStrike, 100).tolist()\n",
+    "    print strikes\n",
+    "    return strikes\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def optPrices(expDates, strikes):\n",
+    "    optdf = optionPrices(date(2014,1,1),date(2014,1,1), 8200, date(2014,1,30) )\n",
+    "    for expires in expDates:\n",
+    "        startDate= expires - dateutil.relativedelta.relativedelta(days=15)\n",
+    "        #startDate = startDate.replace(day=1)\n",
+    "        endDate = expires\n",
+    "        print expires\n",
+    "        print startDate\n",
+    "        for strike in strikes:\n",
+    "            print strike\n",
+    "            tempdf = optionPrices(startDate, endDate, strike, endDate)\n",
+    "            optdf = pd.concat([optdf,tempdf])\n",
+    "    optdf.to_csv(\"C:\\Users\\sivar\\Dropbox\\Python Notebooks\\optBankNifty-delta.csv\")\n",
+    "    bankniftyopt = pd.read_csv(\"C:\\Users\\sivar\\Dropbox\\Python Notebooks\\optBankNifty-delta.csv\")\n",
+    "    bankniftyopt['Date'] = pd.to_datetime(bankniftyopt['Date'])\n",
+    "    bankniftyopt['Expiry'] = pd.to_datetime(bankniftyopt['Expiry'])\n",
+    "    store_csv(bankniftyopt, \"optPrices\")\n",
+    "    return bankniftyopt"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def optionPrices(startDate, endDate, strike, expires):\n",
+    "    ce = npy.get_history(symbol=\"BANKNIFTY\", start=startDate, end=endDate, index=True, option_type='CE', strike_price=strike,\n",
+    "                        expiry_date=expires)\n",
+    "    pe = npy.get_history(symbol=\"BANKNIFTY\", start=startDate, end=endDate, index=True, option_type='PE', strike_price=strike,\n",
+    "                        expiry_date=expires)\n",
+    "    return pd.concat([ce,pe])\n",
+    "optdf = optionPrices(date(2014,1,1),date(2014,1,1), 8200, date(2014,1,30) )"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def mergeDF(indexdf, optionsdf):\n",
+    "    d2f = pd.merge(indexdf, optionsdf, on='Date')\n",
+    "    store_csv(d2f, \"mergedDF\")\n",
+    "    return d2f"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def computeGreeks(dataf):\n",
+    "    dataf = setDaysToExpiry(dataf)\n",
+    "    dataf['Range'] = dataf.apply(setRange, axis=1)\n",
+    "    dataf['UpperRange'] = dataf['Close_y'] + dataf['Range']\n",
+    "    dataf['LowerRange'] = dataf['Close_y'] - dataf['Range']\n",
+    "    store_csv(dataf,\"computeGreeks.csv\")\n",
+    "    #dataf = calculateGreeks254(dataf)\n",
+    "    #dataf = calculateGreeks365(dataf)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def setDaysToExpiry(df):\n",
+    "    i = 0\n",
+    "    df['Date'] = pd.to_datetime(df['Date'])\n",
+    "    df['Days_to_Expiry'] = 'NA'\n",
+    "    for rows in df['Date'][0:]:\n",
+    "        DaysToExpiry= relativedelta.relativedelta(df['Expiry'][i],df['Date'][i])\n",
+    "        df['Days_to_Expiry'][i] = DaysToExpiry.days\n",
+    "        i = i+1\n",
+    "    store_csv(df, \"setDaysToExpiry\")\n",
+    "    return df"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def setRange(df):\n",
+    "    return df['Close_y']* df['AnnualVolatility365']/100*math.sqrt(df['Days_to_Expiry'])/math.sqrt(365)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def days_to_expiry(df):\n",
+    "    i = 0\n",
+    "    df['Date'] = pd.to_datetime(df['Date'])\n",
+    "    df['Days_to_Expiry'] = 'NA'\n",
+    "    for rows in df['Date'][0:]:\n",
+    "        DaysToExpiry= relativedelta.relativedelta(df['Expiry'][i],df['Date'][i])\n",
+    "        df['Days_to_Expiry'][i] = DaysToExpiry.days\n",
+    "        i = i+1\n",
+    "        print i\n",
+    "    return df"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def calculateGreeks254(df):\n",
+    "    i = 0\n",
+    "    for rows in df['Underlying']:\n",
+    "        try:\n",
+    "            if df['Option Type'] == \"CE\":\n",
+    "                c = mb.BS([df['Underlying'][i],df['Strike Price'][i],12,df['Days_to_Expiry'][i]],volatility=df['AnnualVolatility254'][i])\n",
+    "                df['Delta254'] = c.callDelta\n",
+    "                df['Theta254'] = c.callTheta\n",
+    "                df['Rho254'] = c.callRho\n",
+    "                df['Vega254'] = c.vega\n",
+    "                df['Gamma254'] = c.gamma\n",
+    "                c1 = mb.BS([df['Underlying'][i],df['Strike Price'][i],12,df['Days_to_Expiry'][i]],callPrice=df['Close_x'][i])\n",
+    "                df['CalcIV'] = c1.impliedVolatility\n",
+    "            if df['Option Type'] == \"PE\":\n",
+    "                c = mb.BS([df['Underlying'][i],df['Strike Price'][i],12,df['Days_to_Expiry'][i]],volatility=df['AnnualVolatility'][i])\n",
+    "                df['Delta254'] = c.putDelta\n",
+    "                df['Theta254'] = c.putTheta\n",
+    "                df['Rho254'] = c.putRho\n",
+    "                df['Vega254'] = c.vega\n",
+    "                df['Gamma254'] = c.gamma\n",
+    "                c1 = mb.BS([df['Underlying'][i],df['Strike Price'][i],12,df['Days_to_Expiry'][i]],callPrice=df['Close_x'][i])\n",
+    "                df['CalcIV254'] = c1.impliedVolatility\n",
+    "        except:\n",
+    "            print \"someError\"\n",
+    "        i = i+1\n",
+    "    store_csv(df, \"calculateGreeks254.csv\")\n",
+    "    return df\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def calculateGreeks365(df):\n",
+    "    i = 0\n",
+    "    for rows in df['Underlying']:\n",
+    "        try:\n",
+    "            if df['Option Type'] == \"CE\":\n",
+    "                c = mb.BS([df['Underlying'][i],df['Strike Price'][i],12,df['Days_to_Expiry'][i]],volatility=df['AnnualVolatility365'][i])\n",
+    "                df['Delta365'] = c.callDelta\n",
+    "                df['Theta365'] = c.callTheta\n",
+    "                df['Rho365'] = c.callRho\n",
+    "                df['Vega365'] = c.vega\n",
+    "                df['Gamma365'] = c.gamma\n",
+    "                c1 = mb.BS([df['Underlying'][i],df['Strike Price'][i],12,df['Days_to_Expiry'][i]],callPrice=df['Close_x'][i])\n",
+    "                df['CalcIV'] = c1.impliedVolatility\n",
+    "            if df['Option Type'] == \"PE\":\n",
+    "                c = mb.BS([df['Underlying'][i],df['Strike Price'][i],12,df['Days_to_Expiry'][i]],volatility=df['AnnualVolatility'][i])\n",
+    "                df['Delta365'] = c.putDelta\n",
+    "                df['Theta365'] = c.putTheta\n",
+    "                df['Rho365'] = c.putRho\n",
+    "                df['Vega365'] = c.vega\n",
+    "                df['Gamma365'] = c.gamma\n",
+    "                c1 = mb.BS([df['Underlying'][i],df['Strike Price'][i],12,df['Days_to_Expiry'][i]],callPrice=df['Close_x'][i])\n",
+    "                df['CalcIV365'] = c1.impliedVolatility\n",
+    "        except:\n",
+    "            print \"someError\"\n",
+    "        i = i+1\n",
+    "    store_csv(df, \"calculateGreeks365.csv\")\n",
+    "    return df"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def appendResults(df):\n",
+    "    existingdf = pd.read_csv(\"C:\\Users\\sivar\\Dropbox\\Python Notebooks\\BankNIFTY_2017_Part1.csv\")\n",
+    "    updateddf = pd.concat([existingdf,df])\n",
+    "    updateddf.to_csv(\"C:\\Users\\sivar\\Dropbox\\Python Notebooks\\BankNIFTY_2017_Part22.csv\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def store_csv(df,name):\n",
+    "    path = \"C:\\Users\\sivar\\Dropbox\\Python Notebooks\\\\\" + name\n",
+    "    df.to_csv(path)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "tempIndex.to_csv('C:\\Users\\sivar\\Dropbox\\Python Notebooks\\BankNIFTY_2017_Part1.csv')"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 2",
+   "language": "python",
+   "name": "python2"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 2
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython2",
+   "version": "2.7.11"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
